@@ -93,11 +93,18 @@ public:
 	//Risovanie vars
 	std::vector<CPoint> points;
 	int nPoints = 11;
-	int pointsSize = 8;
-	int lBorder = 1500;
+	int pointsSize = 6;
+	int lBorder = 800;
 	int tBorder = 100;
-	int zoom = 3;
+	double zoom = 3;
 	int hMax = 150;
+	int oknoWi = 500;
+	int oknoHe = 200;
+	bool lDown = false;
+	int focusedPoint = -1;
+	int pogreshn = 7;
+	int mouseY = 0;
+	CPoint oldMouse;
 	CPoint CDiskDlg::toLocal(int x, int y);
 	CPoint CDiskDlg::toGlobal(int x, int y);
 	void CDiskDlg::buildDisk();
@@ -140,6 +147,9 @@ public:
 	double calc_Nt(double u, double Nr, double r, double theta) {
 		return edit_mu * Nr + edit_e * edit_c * (u / r - theta);
 	}
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };
 
 

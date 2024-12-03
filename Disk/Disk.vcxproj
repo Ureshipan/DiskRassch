@@ -206,7 +206,9 @@
     <ResourceCompile Include="Disk.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="kAPI5.tlb" />
+    <None Include="kAPI5.tlb">
+      <FileType>Document</FileType>
+    </None>
     <None Include="res\Disk.rc2" />
   </ItemGroup>
   <ItemGroup>

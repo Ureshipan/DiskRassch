@@ -117,6 +117,9 @@ BEGIN_MESSAGE_MAP(CDiskDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT_natyg, &CDiskDlg::OnEnChangeEditnatyg)
 	ON_BN_CLICKED(IDC_BUTTON1, &CDiskDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(IDOK, &CDiskDlg::OnBnClickedOk)
+	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 
@@ -199,13 +202,36 @@ void CDiskDlg::OnPaint()
 		//Paint here
 
 		CPaintDC dc(this);
+
+		CRect okno;
+		GetClientRect(&okno);
+
+		zoom = (okno.Width() / 3.) / edit_b;
+
 		
+		// Создание точек
 		if (points.size() < nPoints) {
 			points.clear();
 			for (int i = 0; i < nPoints; i++) {
 				points.push_back({ (int) (edit_c + (edit_b - edit_c) / (nPoints - 1) * i), (int) ((edit_h0 / 2) - (edit_h0 / 2) / 2 / (nPoints - 1) * i) });
 			}
 		}
+
+
+		// Линии фона
+
+		CPen penFon;
+		penFon.CreatePen(PS_SOLID, 3, RGB(200, 200, 200));
+		CPen* old_pen1 = dc.SelectObject(&penFon);
+		for (int i = 0; i < points.size(); i++) {
+			CPoint tmpoint0 = toGlobal(points[i].x, 0);
+			CPoint tmpoint1 = toGlobal(points[i].x, hMax);
+			dc.MoveTo(tmpoint0);
+			dc.LineTo(tmpoint1);
+		}
+		CPen pen1;
+		pen1.CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
+		CPen* old_pen = dc.SelectObject(&pen1);
 
 		dc.MoveTo(toGlobal(0, points[0].y));
 		for (int i = 0; i < nPoints; i++) {
@@ -632,3 +658,69 @@ void CDiskDlg::OnBnClickedOk()
 
 
 
+
+
+void CDiskDlg::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	lDown = true;
+	for (int i = 0; i < points.size(); i++) {
+		CPoint tmpoint = toGlobal(points[i].x, points[i].y);
+		if (tmpoint.x - pogreshn < point.x && point.x < tmpoint.x + pogreshn)// &&
+			//tmpoint.y - pogreshn < point.y && point.y < tmpoint.y + pogreshn) 
+		{
+			focusedPoint = i;
+			oldMouse = point;
+			mouseY = toLocal(point.x, point.y).y;
+			Invalidate();
+			break;
+		}
+	}
+
+	CDialogEx::OnLButtonDown(nFlags, point);
+}
+
+
+void CDiskDlg::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	lDown = false;
+	if (focusedPoint != -1)
+	{
+		points[focusedPoint].y = toLocal(point.x, point.y).y;
+		if (points[focusedPoint].y < 0) {
+			points[focusedPoint].y = 0;
+		}
+		else if (points[focusedPoint].y > hMax) {
+			points[focusedPoint].y = hMax;
+		}
+		focusedPoint = -1;
+		Invalidate();
+	}
+
+	CDialogEx::OnLButtonUp(nFlags, point);
+}
+
+
+void CDiskDlg::OnMouseMove(UINT nFlags, CPoint point)
+{
+	if (lDown) {
+		mouseY = toLocal(point.x, point.y).y;
+		Invalidate();
+	}
+	else
+	{
+		for (int i = 0; i < points.size(); i++) {
+			CPoint tmpoint = toGlobal(points[i].x, points[i].y);
+			if (tmpoint.x - pogreshn < point.x && point.x < tmpoint.x + pogreshn &&
+				tmpoint.y - pogreshn < point.y && point.y < tmpoint.y + pogreshn)
+			{
+				if (mouseY != points[i].y) {
+					mouseY = points[i].y;
+					Invalidate();
+				}
+				break;
+			}
+		}
+	}
+
+	CDialogEx::OnMouseMove(nFlags, point);
+}
