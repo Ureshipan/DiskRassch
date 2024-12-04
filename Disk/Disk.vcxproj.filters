@@ -60,7 +60,9 @@
     <None Include="res\Disk.rc2">
       <Filter>Файлы ресурсов</Filter>
     </None>
-    <None Include="kAPI5.tlb" />
+    <None Include="kAPI5.tlb">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Disk.ico">
@@ -71,6 +73,8 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="kAPI5.lib" />
+    <Library Include="kAPI5.lib">
+      <Filter>Файлы ресурсов</Filter>
+    </Library>
   </ItemGroup>
 </Project>
