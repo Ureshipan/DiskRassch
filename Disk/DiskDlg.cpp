@@ -203,12 +203,15 @@ void CDiskDlg::OnPaint()
 
 		CPaintDC dc(this);
 
-		CRect okno;
-		GetClientRect(&okno);
+		CRect clientOkno;
+		GetClientRect(&clientOkno);
 
-		zoom = (okno.Width() / 3.) / edit_b;
+		zoom = (clientOkno.Width() / 3.) / edit_b;
 
-		
+		CRect rectOkno;
+		GetWindowRect(&rectOkno);
+		lBorder = rectOkno.Width() / 1.7;
+
 		// Создание точек
 		if (points.size() < nPoints) {
 			points.clear();
