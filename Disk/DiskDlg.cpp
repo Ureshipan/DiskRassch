@@ -370,11 +370,72 @@ void CDiskDlg::OnBnClickedButton1()
 
 		// Увеличиваем радиус
 		r += dr;
+
+		if (edit_a <= 0.0) {
+			AfxMessageBox(_T("Ошибка: Начальный радиус должен быть больше нуля."));
+			return;
+		}
+
+		
+
+		// Проверка шага интегрирования
+		if (dr <= 0.0) {
+			AfxMessageBox(_T("Ошибка: Шаг интегрирования должен быть больше нуля."));
+			return;
+		}
+
+		// Проверка коэффициента теплового расширения
+		if (edit_alfa <= 0.0) {
+			AfxMessageBox(_T("Ошибка: Коэффициент теплового расширения должен быть больше нуля."));
+			return;
+		}
+
+		// Проверка допустимого напряжения
+		if (sigma_max <= 0.0) {
+			AfxMessageBox(_T("Ошибка: Максимальное допустимое напряжение должно быть больше нуля."));
+			return;
+		}
+
+		if (dr <= 0.0 || dr > (edit_b - edit_a)) {
+			AfxMessageBox(_T("Ошибка: Шаг интегрирования должен быть положительным и меньше разницы между конечным и начальным радиусом."));
+			return;
+		}
+
+		if (fabs(sigma_r) > sigma_max) {
+			AfxMessageBox(_T("Ошибка: Радиальное напряжение превысило предел прочности."));
+			return;
+		}
+
+		if (fabs(sigma_theta) > sigma_max) {
+			AfxMessageBox(_T("Ошибка: Окружное напряжение превысило предел прочности."));
+			return;
+		}
+
+		if (sigma_i > sigma_max) {
+			AfxMessageBox(_T("Ошибка: Комбинированное напряжение превысило допустимый предел."));
+			return;
+		}
+
+		if (fabs(epsilon_r) > 0.005) {
+			AfxMessageBox(_T("Ошибка: Радиальная деформация слишком велика."));
+			return;
+		}
+
+		if (fabs(epsilon_t) > 0.005) {
+			AfxMessageBox(_T("Ошибка: Окружная деформация слишком велика."));
+			return;
+		}
+
+		if (fabs(u) > 0.1 * r) {
+			AfxMessageBox(_T("Ошибка: Радиальное перемещение слишком велико относительно радиуса."));
+			return;
+		}
 	}
 
 	
+	
 	CString finalText;
-	finalText.Format(_T("Максимальное напряжение в диске: %.2f МПа\n"), sigma_max_value);
+	//finalText.Format(_T("Максимальное напряжение в диске: %.2f МПа\n"), sigma_max_value);
 
 	
 	if (sigma_max_value <= sigma_max) {
