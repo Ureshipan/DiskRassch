@@ -42,6 +42,7 @@ CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	// Связывание элементов управления с переменными
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
@@ -49,33 +50,35 @@ END_MESSAGE_MAP()
 
 
 // Диалоговое окно CDiskDlg
-const double dr = 25.0;
+const double dr = 25.0; // Константа для расчёта дисков
 
 
 CDiskDlg::CDiskDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DISK_DIALOG, pParent)
-	, edit_e(200000)
-    , edit_mu(0.3)
-    , edit_at(250)
-    , edit_alfa(1.5*0.00001)
-    , edit_ro(8000)
-    , edit_nt(1.2)
-    , edit_w(200)
-    , edit_p(100)
-    , edit_ta(100)
-    , edit_tb(400)
-    , edit_a(40.0)
-    , edit_b(400)
-    , edit_c(50)
-    , edit_h0(100)
-    , edit_hk(50)
-    , edit_natyg(1)
+	, edit_e(200000) // Модуль упругости
+	, edit_mu(0.3)   // Коэффициент Пуассона
+	, edit_at(250)   // Параметр материала
+	, edit_alfa(1.5 * 0.00001) // Коэффициент теплового расширения
+	, edit_ro(8000)  // Плотность материала
+	, edit_nt(1.2)   // Коэффициент натяжения
+	, edit_w(200)    // Угловая скорость
+	, edit_p(100)    // Давление
+	, edit_ta(100)   // Температура в начале
+	, edit_tb(400)   // Температура в конце
+	, edit_a(40.0)   // Радиус отверстия
+	, edit_b(400)    // Внешний радиус
+	, edit_c(50)     // Минимальный радиус
+	, edit_h0(100)   // Начальная высота
+	, edit_hk(50)    // Конечная высота
+	, edit_natyg(1)  // Параметр натяга
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME); // Загрузка значка приложения
 }
+
 
 void CDiskDlg::DoDataExchange(CDataExchange* pDX)
 {
+	// Привязка переменных к элементам управления
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT_E, edit_e);
 	DDX_Text(pDX, IDC_EDIT_Mu, edit_mu);
@@ -199,42 +202,54 @@ void CDiskDlg::OnPaint()
 	}
 	else
 	{
-		//Paint here
-
+		// Основная отрисовка
 		CPaintDC dc(this);
 
+		// Получение размеров клиентской области
 		CRect clientOkno;
 		GetClientRect(&clientOkno);
 
-		zoom = (clientOkno.Width() / 3.) / edit_b;
+		// Масштабирование
+		zoom = (clientOkno.Width() / 3.0) / edit_b;
 
+		// Определение левого края окна
 		CRect rectOkno;
 		GetWindowRect(&rectOkno);
 		lBorder = rectOkno.Width() / 1.7;
 
-		// Создание точек
+		// Расчёт точек, если их недостаточно
 		if (points.size() < nPoints) {
 			points.clear();
 			for (int i = 0; i < nPoints; i++) {
-				points.push_back({ (int) (edit_c + (edit_b - edit_c) / (nPoints - 1) * i), (int) ((edit_h0 / 2) - (edit_h0 / 2) / 2 / (nPoints - 1) * i) });
+				points.push_back({
+					(int)(edit_c + (edit_b - edit_c) / (nPoints - 1) * i),
+					(int)((edit_h0 / 2) - (edit_h0 / 2) / 2 / (nPoints - 1) * i)
+					});
 			}
 		}
 
 
 		// Линии фона
-
+		// Создаем серый фон для линий сетки
 		CPen penFon;
 		penFon.CreatePen(PS_SOLID, 3, RGB(200, 200, 200));
 		CPen* old_pen1 = dc.SelectObject(&penFon);
 		for (int i = 0; i < points.size(); i++) {
+			// Переводим координаты точек в глобальную систему и рисуем линии
 			CPoint tmpoint0 = toGlobal(points[i].x, 0);
 			CPoint tmpoint1 = toGlobal(points[i].x, hMax);
 			dc.MoveTo(tmpoint0);
 			dc.LineTo(tmpoint1);
 		}
+
+		// Создаем черные линии для основных элементов
 		CPen pen1;
 		pen1.CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
 		CPen* old_pen = dc.SelectObject(&pen1);
+
+		// Рисуем контур диска
+		// Начинаем с первой точки и последовательно соединяем остальные
+		// Добавляем эллипсы на каждой точке для визуального обозначения
 
 		dc.MoveTo(toGlobal(0, points[0].y));
 		for (int i = 0; i < nPoints; i++) {
@@ -243,11 +258,12 @@ void CDiskDlg::OnPaint()
 			CRect lDrawRect;
 			lDrawRect.top = tmpPt.y - pointsSize;
 			lDrawRect.left = tmpPt.x - pointsSize;
-			lDrawRect.bottom = tmpPt.y + pointsSize;           // Последующие точки, соединяемые с предыдущей линией
+			lDrawRect.bottom = tmpPt.y + pointsSize;
 			lDrawRect.right = tmpPt.x + pointsSize;
 			dc.Ellipse(lDrawRect);
 		}
 		dc.LineTo(toGlobal(edit_b, 0));
+
 
 		// Отрисовка осей
 		// Z
@@ -279,7 +295,7 @@ HCURSOR CDiskDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
-
+// Преобразование из глобальных координат в локальные
 CPoint CDiskDlg::toLocal(int x, int y)
 {
 	CPoint lPoint;
@@ -287,7 +303,7 @@ CPoint CDiskDlg::toLocal(int x, int y)
 	lPoint.y = hMax - ((y - tBorder) / zoom);
 	return lPoint;
 }
-
+// Преобразование из локальных координат в глобальные
 CPoint CDiskDlg::toGlobal(int x, int y)
 {
 	CPoint gPoint;
@@ -299,14 +315,15 @@ CPoint CDiskDlg::toGlobal(int x, int y)
 
 void CDiskDlg::OnBnClickedButton1()
 {
-	double sigma_max = 100000.0;  
-	bool diskIsStrongEnough = true;
-	double sigma_max_value = 0.0;
+	double sigma_max = 100000.0;  // Максимально допустимое напряжение
+	bool diskIsStrongEnough = true; // Флаг прочности диска
+	double sigma_max_value = 0.0;   // Максимальное рассчитанное напряжение
 	CString outputText;
 	UpdateData(TRUE);
-	double r = edit_a;
+
+	double r = edit_a; // Начальный радиус
 	double u = 0.0;   // Начальное радиальное перемещение
-	double Nr = 0.0;
+	double Nr = 0.0;  // Радиальная сила
 	CString tempText;
 	tempText.Format(_T("%-10s %-10s %-10s %-15s %-15s %-15s %-15s %-15s %-15s %-15s\n"),
 		_T("r"), _T("u"), _T("Nr"), _T("Nt"), _T("sigma_r"), _T("sigma_theta"), _T("epsilon_r"), _T("epsilon_t"), _T("deltaT"), _T("theta"));
@@ -351,26 +368,37 @@ void CDiskDlg::OnBnClickedButton1()
 		outputText += tempText;
 
 
-		// Шаг Рунге-Кутта
+		// Шаг Рунге-Кутта для обновления перемещения и силы
+		// 
+		// 1. Оценка первой производной перемещения и силы (k1) на текущем шаге
+		// du_dr и dNr_dr — это функции, которые вычисляют производные перемещения и силы по радиусу.
 		double k1_u = du_dr(r, u, Nr, deltaT);
 		double k1_Nr = dNr_dr(r, u, Nr, deltaT);
 
+		// 2. Оценка второй производной (k2) с использованием половины шага и первой оценки изменений
+		// Это позволяет скорректировать оценку, учитывая уже некоторую часть изменения перемещения и силы.
 		double k2_u = du_dr(r + dr / 2.0, u + k1_u * dr / 2.0, Nr + k1_Nr * dr / 2.0, deltaT);
 		double k2_Nr = dNr_dr(r + dr / 2.0, u + k1_u * dr / 2.0, Nr + k1_Nr * dr / 2.0, deltaT);
 
+		// 3. Оценка третьей производной (k3) с новой корректировкой, снова используя половину шага
+		// Этап необходим для более точной оценки изменения перемещения и силы, также на основе предыдущих результатов.
 		double k3_u = du_dr(r + dr / 2.0, u + k2_u * dr / 2.0, Nr + k2_Nr * dr / 2.0, deltaT);
 		double k3_Nr = dNr_dr(r + dr / 2.0, u + k2_u * dr / 2.0, Nr + k2_Nr * dr / 2.0, deltaT);
 
+		// 4. Оценка четвёртой производной (k4) с использованием полного шага
+		// Теперь перемещение и сила обновляются на основе значений, полученных на третьем шаге.
 		double k4_u = du_dr(r + dr, u + k3_u * dr, Nr + k3_Nr * dr, deltaT);
 		double k4_Nr = dNr_dr(r + dr, u + k3_u * dr, Nr + k3_Nr * dr, deltaT);
 
-		// Обновляем перемещение и радиальную силу
+
+		// 5. Итоговое обновление перемещения и силы
+		// Метод Рунге-Кутты 4-го порядка использует взвешенную сумму всех оценок (k1, k2, k3, k4)
 		u += (k1_u + 2 * k2_u + 2 * k3_u + k4_u) * dr / 6.0;
 		Nr += (k1_Nr + 2 * k2_Nr + 2 * k3_Nr + k4_Nr) * dr / 6.0;
 
-		// Увеличиваем радиус
+		// Увеличиваем радиус на шаг
 		r += dr;
-
+		// Проверка начального радиуса
 		if (edit_a <= 0.0) {
 			AfxMessageBox(_T("Ошибка: Начальный радиус должен быть больше нуля."));
 			return;
@@ -395,7 +423,7 @@ void CDiskDlg::OnBnClickedButton1()
 			AfxMessageBox(_T("Ошибка: Максимальное допустимое напряжение должно быть больше нуля."));
 			return;
 		}
-
+		// Проверка шага интегрирования dr, что он положителеный и не превышает разницу между конечным и начальным радиусом
 		if (dr <= 0.0 || dr > (edit_b - edit_a)) {
 			AfxMessageBox(_T("Ошибка: Шаг интегрирования должен быть положительным и меньше разницы между конечным и начальным радиусом."));
 			return;
@@ -416,18 +444,39 @@ void CDiskDlg::OnBnClickedButton1()
 			return;
 		}
 
-		if (fabs(epsilon_r) > 0.005) {
+		if (fabs(epsilon_r) > 0.5) {
 			AfxMessageBox(_T("Ошибка: Радиальная деформация слишком велика."));
 			return;
 		}
 
-		if (fabs(epsilon_t) > 0.005) {
+		if (fabs(epsilon_t) > 0.5) {
 			AfxMessageBox(_T("Ошибка: Окружная деформация слишком велика."));
 			return;
 		}
 
 		if (fabs(u) > 0.1 * r) {
 			AfxMessageBox(_T("Ошибка: Радиальное перемещение слишком велико относительно радиуса."));
+			return;
+		}
+
+		
+		if (edit_h0 <= 0) {
+			AfxMessageBox(_T("Ошибка: Начальная высота диска должна быть больше нуля."));
+			return;
+		}
+
+		if (edit_hk <= 0) {
+			AfxMessageBox(_T("Ошибка: Конечная высота диска должна быть больше нуля."));
+			return;
+		}
+
+		if (edit_hk > edit_h0) {
+			AfxMessageBox(_T("Ошибка: Конечная высота диска не может быть больше начальной."));
+			return;
+		}
+
+		if (edit_b < (edit_h0 * 2)) {
+			AfxMessageBox(_T("Ошибка: Высота диска не может быть в два раза больше внешнего радиуса."));
 			return;
 		}
 	}
@@ -439,7 +488,7 @@ void CDiskDlg::OnBnClickedButton1()
 
 	
 	if (sigma_max_value <= sigma_max) {
-		finalText.Append(_T("Расчёт завершён успешно. Условие прочности выполняется."));
+		finalText.Append(_T("Расчёт завершён успешно. Условие прочности выполняется. Условие прочности."));
 	}
 	else {
 		finalText.Append(_T("Расчёт завершён. Условие прочности НЕ выполняется! Измените исходные данные."));

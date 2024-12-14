@@ -54,23 +54,25 @@ public:
 	afx_msg void OnEnChangeEdithk();
 	afx_msg void OnEnChangeEditnatyg();
 	afx_msg void OnBnClickedButton1();
-	double edit_e;
-	double edit_mu;
-	double edit_at;
-	double edit_alfa;
-	double edit_ro;
-	double edit_nt;
-	double edit_w;
-	double edit_p;
-	double edit_ta;
-	double edit_tb;
-	double edit_a;
-	double edit_b;
-	double edit_c;
-	double edit_h0;
-	double edit_hk;
-	double edit_natyg;
-	double k = 1;
+	// Переменные для расчета параметров
+	double edit_e; // Модуль Юнга
+	double edit_mu; // Коэффициент Пуассона
+	double edit_at; // Температурное изменение
+	double edit_alfa; // Коэффициент теплового расширения
+	double edit_ro; // Плотность материала
+	double edit_nt; // Нагрузочные параметры
+	double edit_w; // Ширина материала
+	double edit_p; // Давление
+	double edit_ta; // Начальная температура
+	double edit_tb; // Конечная температура
+	double edit_a; // Начальный радиус
+	double edit_b; // Конечный радиус
+	double edit_c; // Толщина материала
+	double edit_h0; // Начальная высота
+	double edit_hk; // Конечная высота
+	double edit_natyg; // Натяжение
+
+	double k = 1; // Постоянная
 	/*CEdit edit_e;
 	CEdit edit_mu;
 	CEdit edit_at;
@@ -90,21 +92,22 @@ public:
 	afx_msg void OnBnClickedOk();
 
 
-	//Risovanie vars
-	std::vector<CPoint> points;
-	int nPoints = 11;
-	int pointsSize = 6;
-	int lBorder = 800;
-	int tBorder = 100;
-	double zoom = 3;
-	int hMax = 150;
-	int oknoWi = 500;
-	int oknoHe = 200;
-	bool lDown = false;
-	int focusedPoint = -1;
-	int pogreshn = 7;
-	int mouseY = 0;
-	CPoint oldMouse;
+	
+	// Переменные для рисования графиков 
+	std::vector<CPoint> points; // Вектор точек
+	int nPoints = 11; // Количество точек
+	int pointsSize = 6; // Размер точки
+	int lBorder = 800; // Левая граница окна
+	int tBorder = 100; // Верхняя граница окна
+	double zoom = 3; // Масштаб
+	int hMax = 150; // Максимальная высота
+	int oknoWi = 500; // Ширина окна
+	int oknoHe = 200; // Высота окна
+	bool lDown = false; // Флаг нажатия кнопки мыши
+	int focusedPoint = -1; // Индекс выбранной точки
+	int pogreshn = 7; // Погрешность
+	int mouseY = 0; // Координата Y мыши
+	CPoint oldMouse; // Старое положение мыши
 	CPoint CDiskDlg::toLocal(int x, int y);
 	CPoint CDiskDlg::toGlobal(int x, int y);
 	void CDiskDlg::buildDisk();
